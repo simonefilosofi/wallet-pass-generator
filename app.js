@@ -1,6 +1,7 @@
 /* ── State ── */
 const state = {
   barcodeData: '',
+  qrDataUrl:   '',
 };
 
 /* ── DOM refs ── */
@@ -38,6 +39,7 @@ function setDecodeSuccess(data) {
   downloadBtn.disabled = false;
   downloadNote.textContent = '';
   renderPreview();
+  updateSignedBtnState();
 }
 
 function setDecodeError() {
@@ -48,6 +50,7 @@ function setDecodeError() {
   downloadBtn.disabled = true;
   downloadNote.textContent = 'Upload a QR code image to enable download.';
   renderPreview();
+  updateSignedBtnState();
 }
 
 /* ── QR decode ── */
@@ -101,6 +104,10 @@ function handleFile(file) {
   hide(decodeError);
   loadPreview(file);
   decodeQR(file);
+  // Store data URL so web pass export can embed the QR image inline
+  const r = new FileReader();
+  r.onload = e => { state.qrDataUrl = e.target.result; };
+  r.readAsDataURL(file);
 }
 
 /* ── Clear ── */
@@ -113,6 +120,7 @@ function clearUpload() {
   show(dropIdle);
   hide(decodeResult);
   hide(decodeError);
+  state.qrDataUrl  = '';
   downloadBtn.disabled = true;
   downloadNote.textContent = 'Upload a QR code image to enable download.';
 }
@@ -512,7 +520,9 @@ function buildPassJson() {
 
 /** SHA-1 hash a Blob or ArrayBuffer → lowercase hex string */
 async function sha1Hex(source) {
-  const buffer = source instanceof ArrayBuffer ? source : await source.arrayBuffer();
+  const buffer = (source instanceof ArrayBuffer || ArrayBuffer.isView(source))
+    ? source
+    : await source.arrayBuffer();
   const digest = await crypto.subtle.digest('SHA-1', buffer);
   return Array.from(new Uint8Array(digest))
     .map(b => b.toString(16).padStart(2, '0'))
@@ -767,6 +777,9 @@ function startOver() {
   // Mark first preset active
   presetBtns.forEach((b, i) => b.classList.toggle('active', i === 0));
 
+  // QR data URL
+  state.qrDataUrl          = '';
+
   // Logo
   state.logoDataUrl        = null;
   state.logoFile           = null;
@@ -783,3 +796,245 @@ function startOver() {
 }
 
 document.getElementById('startOverBtn').addEventListener('click', startOver);
+
+
+/* ══════════════════════════════════════════════════════════
+   WEB PASS EXPORT
+   ══════════════════════════════════════════════════════════ */
+
+/** Escape a string for safe embedding in HTML attribute values and text */
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/** Convert a Blob to a base64 data URL */
+function blobToDataUrl(blob) {
+  return new Promise(resolve => {
+    const r = new FileReader();
+    r.onload = e => resolve(e.target.result);
+    r.readAsDataURL(blob);
+  });
+}
+
+/**
+ * Build a fully self-contained HTML string that replicates the pass card.
+ * All assets (logo, QR image, touch icon) are inlined as data URLs.
+ * When saved and opened in Mobile Safari, the user can "Add to Home Screen"
+ * to get a tap-away full-screen pass — no App Store, no certificate needed.
+ */
+function buildWebPassHtml(iconDataUrl) {
+  const orgRaw   = orgNameInput.value.trim()   || 'My Organization';
+  const titleRaw = passTitleInput.value.trim() || 'My Pass';
+
+  const org    = escHtml(orgRaw);
+  const title  = escHtml(titleRaw);
+  const letter = escHtml(orgRaw.charAt(0).toUpperCase());
+
+  const bg = bgColorInput.value;
+  const fg = fgColorInput.value;
+  const lc = labelColorInput.value;
+
+  const f1l   = escHtml(field1LabelInput.value.trim());
+  const f1v   = escHtml(field1ValueInput.value.trim() || '—');
+  const f2l   = escHtml(field2LabelInput.value.trim());
+  const f2v   = escHtml(field2ValueInput.value.trim() || '—');
+  const hasF2 = field2LabelInput.value.trim() || field2ValueInput.value.trim();
+
+  const altText = state.barcodeData
+    ? escHtml(state.barcodeData.length > 32 ? state.barcodeData.slice(0, 30) + '\u2026' : state.barcodeData)
+    : 'Scan to open';
+
+  // Logo: uploaded image or letter avatar
+  const logoHtml = state.logoDataUrl
+    ? `<img src="${state.logoDataUrl}" style="width:30px;height:30px;border-radius:7px;object-fit:cover;display:block;" alt="">`
+    : `<div style="width:30px;height:30px;border-radius:7px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:${fg};">${letter}</div>`;
+
+  // QR code: uploaded image embedded or placeholder message
+  const qrHtml = state.qrDataUrl
+    ? `<img src="${state.qrDataUrl}" style="width:160px;height:160px;object-fit:contain;display:block;" alt="QR Code">`
+    : `<div style="width:160px;height:160px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#999;">No QR code</div>`;
+
+  // Optional second field
+  const field2Html = hasF2
+    ? `<div style="display:flex;flex-direction:column;gap:2px;">
+        <span style="font-size:9px;font-weight:600;letter-spacing:.08em;color:${lc};text-transform:uppercase;">${f2l || '&nbsp;'}</span>
+        <span style="font-size:14px;font-weight:500;color:${fg};">${f2v}</span>
+       </div>`
+    : '';
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="${org}">
+<meta name="theme-color" content="${bg}">
+<link rel="apple-touch-icon" href="${iconDataUrl}">
+<title>${title}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:${bg};min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased}
+.pass{background:${bg};border-radius:16px;box-shadow:0 12px 48px rgba(0,0,0,0.6),0 2px 8px rgba(0,0,0,0.35);width:100%;max-width:320px;overflow:hidden;color:${fg}}
+.ph{display:flex;align-items:center;gap:8px;padding:14px 16px 10px}
+.org{font-size:12px;font-weight:600;opacity:.85;text-transform:uppercase;letter-spacing:.04em;color:${fg}}
+.pb{padding:6px 16px 12px}
+.pp{margin-bottom:14px}
+.ppl{display:block;font-size:9px;font-weight:600;letter-spacing:.08em;color:${lc};margin-bottom:2px;text-transform:uppercase}
+.ppv{font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.2;color:${fg}}
+.pf{display:flex;gap:20px}
+.pbc{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 16px 18px;border-top:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.15)}
+.bb{background:#fff;border-radius:8px;padding:8px;display:inline-flex}
+.ba{font-size:10px;opacity:.5;text-align:center;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:${fg}}
+.hint{margin-top:20px;font-size:11px;opacity:.4;color:${fg};text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="pass">
+  <div class="ph">
+    ${logoHtml}
+    <span class="org">${org}</span>
+  </div>
+  <div class="pb">
+    <div class="pp">
+      <span class="ppl">Title</span>
+      <span class="ppv">${title}</span>
+    </div>
+    <div class="pf">
+      <div style="display:flex;flex-direction:column;gap:2px;">
+        <span style="font-size:9px;font-weight:600;letter-spacing:.08em;color:${lc};text-transform:uppercase;">${f1l || '&nbsp;'}</span>
+        <span style="font-size:14px;font-weight:500;color:${fg};">${f1v}</span>
+      </div>
+      ${field2Html}
+    </div>
+  </div>
+  <div class="pbc">
+    <div class="bb">${qrHtml}</div>
+    <span class="ba">${altText}</span>
+  </div>
+</div>
+<p class="hint">Tap <strong style="opacity:.7">Share</strong> → <strong style="opacity:.7">Add to Home Screen</strong> to save this pass</p>
+</body>
+</html>`;
+}
+
+const webPassBtn = document.getElementById('webPassBtn');
+
+async function buildAndSaveWebPass() {
+  webPassBtn.disabled = true;
+  try {
+    // Generate the home screen touch icon (180 px — Apple's recommended size)
+    const iconBlob    = state.logoFile
+      ? new Blob([await state.logoFile.arrayBuffer()], { type: state.logoFile.type })
+      : await drawLetterIcon(180);
+    const iconDataUrl = await blobToDataUrl(iconBlob);
+
+    const html = buildWebPassHtml(iconDataUrl);
+    const blob = new Blob([html], { type: 'text/html' });
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href     = url;
+    link.download = 'pass.html';
+    link.click();
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error(err);
+    downloadNote.textContent = `Error: ${err.message}`;
+  } finally {
+    webPassBtn.disabled = false;
+  }
+}
+
+webPassBtn.addEventListener('click', buildAndSaveWebPass);
+
+
+/* ══════════════════════════════════════════════════════════
+   FREE ONLINE SIGNING  (WalletWallet API)
+   ══════════════════════════════════════════════════════════ */
+
+const onlineSignToggle = document.getElementById('onlineSignToggle');
+const onlineSignBody   = document.getElementById('onlineSignBody');
+const wwApiKeyInput    = document.getElementById('wwApiKey');
+const signedBtn        = document.getElementById('signedBtn');
+const signedBtnIdle    = signedBtn.querySelector('.btn-idle');
+const signedBtnLoading = signedBtn.querySelector('.btn-loading');
+
+/* Toggle collapsible */
+onlineSignToggle.addEventListener('click', () => {
+  const expanded = onlineSignToggle.getAttribute('aria-expanded') === 'true';
+  onlineSignToggle.setAttribute('aria-expanded', String(!expanded));
+  onlineSignBody.classList.toggle('hidden');
+});
+
+/* Enable signed button when API key is present AND barcode data exists */
+function updateSignedBtnState() {
+  signedBtn.disabled = !wwApiKeyInput.value.trim() || !state.barcodeData.trim();
+}
+wwApiKeyInput.addEventListener('input', updateSignedBtnState);
+
+/**
+ * Call the WalletWallet API with the current pass state.
+ * Maps our fields to their simplified schema:
+ *   barcodeValue → state.barcodeData
+ *   title        → pass title
+ *   label/value  → first secondary field
+ *   color        → background hex color
+ */
+async function buildAndDownloadSigned() {
+  const apiKey = wwApiKeyInput.value.trim();
+  if (!apiKey) return;
+
+  signedBtn.disabled = true;
+  signedBtnIdle.classList.add('hidden');
+  signedBtnLoading.classList.remove('hidden');
+  downloadNote.textContent = '';
+
+  try {
+    const body = {
+      barcodeValue:  state.barcodeData,
+      barcodeFormat: 'QR',
+      title:         passTitleInput.value.trim()    || 'My Pass',
+      label:         field1LabelInput.value.trim()  || '',
+      value:         field1ValueInput.value.trim()  || '',
+      color:         bgColorInput.value,
+    };
+
+    const response = await fetch('https://api.walletwallet.dev/api/pkpass', {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`WalletWallet error ${response.status}: ${text}`);
+    }
+
+    const blob = await response.blob();
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href     = url;
+    link.download = 'pass.pkpass';
+    link.click();
+    URL.revokeObjectURL(url);
+
+    downloadNote.textContent = 'Signed pass.pkpass downloaded.';
+  } catch (err) {
+    console.error(err);
+    downloadNote.textContent = `Error: ${err.message}`;
+  } finally {
+    signedBtnIdle.classList.remove('hidden');
+    signedBtnLoading.classList.add('hidden');
+    updateSignedBtnState();
+  }
+}
+
+signedBtn.addEventListener('click', buildAndDownloadSigned);

@@ -547,6 +547,69 @@ input[type="file"] { display: none; }
   flex-shrink: 0;
 }
 
+.section-link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.signed-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px 20px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, opacity 0.15s, transform 0.1s;
+}
+
+.signed-btn:hover:not(:disabled) {
+  border-color: var(--border-focus);
+  transform: translateY(-1px);
+}
+
+.signed-btn:active:not(:disabled) { transform: translateY(0); }
+
+.signed-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.web-pass-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 11px 20px;
+  background: transparent;
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-md);
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.web-pass-btn:hover {
+  background: rgba(99,102,241,0.1);
+}
+
+.web-pass-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
 .start-over-btn {
   width: 100%;
   padding: 9px 20px;
