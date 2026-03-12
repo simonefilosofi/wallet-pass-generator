@@ -655,9 +655,14 @@ async function generateSignature(manifestJson) {
  *  4. Sign the manifest JSON
  *  5. Pack everything into a JSZip → download as pass.pkpass
  */
+const btnIdle    = downloadBtn.querySelector('.btn-idle');
+const btnLoading = downloadBtn.querySelector('.btn-loading');
+
 async function buildAndDownload() {
   downloadBtn.disabled = true;
-  downloadNote.textContent = 'Building pass…';
+  btnIdle.classList.add('hidden');
+  btnLoading.classList.remove('hidden');
+  downloadNote.textContent = '';
 
   try {
     /* ── 1. Icons ── */
@@ -716,9 +721,65 @@ async function buildAndDownload() {
     console.error(err);
     downloadNote.textContent = `Error: ${err.message}`;
   } finally {
+    btnIdle.classList.remove('hidden');
+    btnLoading.classList.add('hidden');
     downloadBtn.disabled = !state.barcodeData.trim();
   }
 }
 
 /* ── Wire up the download button ── */
 downloadBtn.addEventListener('click', buildAndDownload);
+
+
+/* ══════════════════════════════════════════════════════════
+   START OVER
+   ══════════════════════════════════════════════════════════ */
+
+const DEFAULTS = {
+  orgName:     'My Organization',
+  passTitle:   'My Pass',
+  field1Label: 'Member',
+  field1Value: 'Gold',
+  field2Label: '',
+  field2Value: '',
+  bg:          '#1a1a2e',
+  fg:          '#ffffff',
+  label:       '#9090bb',
+};
+
+function startOver() {
+  // QR upload
+  clearUpload();
+
+  // Text fields
+  orgNameInput.value      = DEFAULTS.orgName;
+  passTitleInput.value    = DEFAULTS.passTitle;
+  field1LabelInput.value  = DEFAULTS.field1Label;
+  field1ValueInput.value  = DEFAULTS.field1Value;
+  field2LabelInput.value  = DEFAULTS.field2Label;
+  field2ValueInput.value  = DEFAULTS.field2Value;
+
+  // Colors
+  bgColorInput.value       = DEFAULTS.bg;    bgColorHexInput.value    = DEFAULTS.bg;
+  fgColorInput.value       = DEFAULTS.fg;    fgColorHexInput.value    = DEFAULTS.fg;
+  labelColorInput.value    = DEFAULTS.label; labelColorHexInput.value = DEFAULTS.label;
+
+  // Mark first preset active
+  presetBtns.forEach((b, i) => b.classList.toggle('active', i === 0));
+
+  // Logo
+  state.logoDataUrl        = null;
+  state.logoFile           = null;
+  logoFileInput.value      = '';
+  logoFileName.textContent = 'No file chosen';
+
+  // Certificate
+  p12File.value                  = '';
+  p12FileNameEl.textContent      = 'No file chosen';
+  p12PasswordGroup.style.display = 'none';
+
+  downloadNote.textContent = 'Upload a QR code image to enable download.';
+  renderPreview();
+}
+
+document.getElementById('startOverBtn').addEventListener('click', startOver);

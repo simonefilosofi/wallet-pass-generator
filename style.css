@@ -531,6 +531,41 @@ input[type="file"] { display: none; }
   cursor: not-allowed;
 }
 
+.btn-idle,
+.btn-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+.start-over-btn {
+  width: 100%;
+  padding: 9px 20px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.start-over-btn:hover {
+  border-color: var(--border-focus);
+  color: var(--text-primary);
+}
+
 .download-note {
   font-size: 0.78rem;
   color: var(--text-hint);
