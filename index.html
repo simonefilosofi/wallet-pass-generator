@@ -93,12 +93,12 @@
 
         <div class="form-group">
           <label for="orgName">Organization name</label>
-          <input type="text" id="orgName" placeholder="e.g. Trenitalia" value="My Organization">
+          <input type="text" id="orgName" placeholder="e.g. Trenitalia" value="LUISS University">
         </div>
 
         <div class="form-group">
           <label for="passTitle">Pass title <span class="hint">(large text on card)</span></label>
-          <input type="text" id="passTitle" placeholder="e.g. My Train Ticket" value="My Pass">
+          <input type="text" id="passTitle" placeholder="e.g. My Train Ticket" value="LUISS University">
         </div>
 
         <div class="form-group">
@@ -112,12 +112,23 @@
 
         <div class="form-row">
           <div class="form-group">
+            <label for="firstName">First name</label>
+            <input type="text" id="firstName" placeholder="e.g. Marco">
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last name</label>
+            <input type="text" id="lastName" placeholder="e.g. Rossi">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
             <label for="field1Label">Label</label>
-            <input type="text" id="field1Label" placeholder="e.g. Seat" value="Member">
+            <input type="text" id="field1Label" placeholder="e.g. Seat" value="Role">
           </div>
           <div class="form-group">
             <label for="field1Value">Value</label>
-            <input type="text" id="field1Value" placeholder="e.g. 14A" value="Gold">
+            <input type="text" id="field1Value" placeholder="e.g. 14A" value="Student">
           </div>
         </div>
 
@@ -150,8 +161,8 @@
           <div class="form-group">
             <label>Background</label>
             <div class="color-pair">
-              <input type="color" id="bgColor" value="#1a1a2e">
-              <input type="text"  id="bgColorHex" value="#1a1a2e" maxlength="7" class="hex-input">
+              <input type="color" id="bgColor" value="#021e3a">
+              <input type="text"  id="bgColorHex" value="#021e3a" maxlength="7" class="hex-input">
             </div>
           </div>
           <div class="form-group">
@@ -164,8 +175,8 @@
           <div class="form-group">
             <label>Labels</label>
             <div class="color-pair">
-              <input type="color" id="labelColor" value="#9090bb">
-              <input type="text"  id="labelColorHex" value="#9090bb" maxlength="7" class="hex-input">
+              <input type="color" id="labelColor" value="#7aa3cc">
+              <input type="text"  id="labelColorHex" value="#7aa3cc" maxlength="7" class="hex-input">
             </div>
           </div>
         </div>
@@ -294,21 +305,25 @@
           <div class="pass-header">
             <div class="pass-logo-wrap">
               <img class="pass-logo-img hidden" id="passLogoImg" alt="">
-              <div class="pass-logo-letter" id="passLogoLetter">M</div>
+              <div class="pass-logo-letter" id="passLogoLetter">L</div>
             </div>
-            <span class="pass-org" id="passOrg">My Organization</span>
+            <span class="pass-org" id="passOrg">LUISS University</span>
           </div>
 
           <div class="pass-body">
             <div class="pass-primary">
               <span class="pass-primary-label">TITLE</span>
-              <span class="pass-primary-value" id="passTitlePreview">My Pass</span>
+              <span class="pass-primary-value" id="passTitlePreview">LUISS University</span>
+            </div>
+
+            <div class="pass-name hidden" id="passNameRow">
+              <span class="pass-name-value" id="passNamePreview"></span>
             </div>
 
             <div class="pass-fields" id="passFieldsPreview">
               <div class="pass-field" id="passField1">
-                <span class="pass-field-label" id="passField1Label">MEMBER</span>
-                <span class="pass-field-value" id="passField1Value">Gold</span>
+                <span class="pass-field-label" id="passField1Label">ROLE</span>
+                <span class="pass-field-value" id="passField1Value">Student</span>
               </div>
               <div class="pass-field hidden" id="passField2">
                 <span class="pass-field-label" id="passField2Label"></span>

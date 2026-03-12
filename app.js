@@ -184,6 +184,8 @@ const passOrg           = document.getElementById('passOrg');
 const passLogoLetter    = document.getElementById('passLogoLetter');
 const passLogoImg       = document.getElementById('passLogoImg');
 const passTitlePreview  = document.getElementById('passTitlePreview');
+const passNameRow       = document.getElementById('passNameRow');
+const passNamePreview   = document.getElementById('passNamePreview');
 const passField2        = document.getElementById('passField2');
 const passField1LabelEl = document.getElementById('passField1Label');
 const passField1ValueEl = document.getElementById('passField1Value');
@@ -196,6 +198,8 @@ const passQrCtx         = passQrCanvas.getContext('2d');
 /* ── Form input refs ── */
 const orgNameInput       = document.getElementById('orgName');
 const passTitleInput     = document.getElementById('passTitle');
+const firstNameInput     = document.getElementById('firstName');
+const lastNameInput      = document.getElementById('lastName');
 const field1LabelInput   = document.getElementById('field1Label');
 const field1ValueInput   = document.getElementById('field1Value');
 const field2LabelInput   = document.getElementById('field2Label');
@@ -281,6 +285,17 @@ function renderPreview() {
   // Title
   passTitlePreview.textContent = passTitleInput.value.trim() || 'My Pass';
 
+  // Name / Surname
+  const firstName = firstNameInput.value.trim();
+  const lastName  = lastNameInput.value.trim();
+  const fullName  = [firstName, lastName].filter(Boolean).join(' ');
+  if (fullName) {
+    passNamePreview.textContent = fullName;
+    passNameRow.classList.remove('hidden');
+  } else {
+    passNameRow.classList.add('hidden');
+  }
+
   // Secondary field 1 (always visible)
   passField1LabelEl.textContent = (field1LabelInput.value.trim() || 'Field').toUpperCase();
   passField1ValueEl.textContent =  field1ValueInput.value.trim() || '—';
@@ -346,6 +361,7 @@ presetBtns.forEach(btn => {
 
 /* ── Text input → re-render ── */
 [orgNameInput, passTitleInput,
+ firstNameInput, lastNameInput,
  field1LabelInput, field1ValueInput,
  field2LabelInput, field2ValueInput].forEach(el => el.addEventListener('input', renderPreview));
 
@@ -375,6 +391,7 @@ p12File.addEventListener('change', () => {
 
 /* ── Initial render ── */
 renderPreview();
+loadDefaultLogo();
 
 
 /* ══════════════════════════════════════════════════════════
@@ -474,6 +491,14 @@ function buildPassJson() {
   const title = passTitleInput.value.trim() || 'My Pass';
 
   const secondaryFields = [];
+
+  // Name field (shown first if present)
+  const pFirstName = firstNameInput.value.trim();
+  const pLastName  = lastNameInput.value.trim();
+  const pFullName  = [pFirstName, pLastName].filter(Boolean).join(' ');
+  if (pFullName) {
+    secondaryFields.push({ key: 'name', label: 'Name', value: pFullName });
+  }
 
   const label1 = field1LabelInput.value.trim();
   const value1 = field1ValueInput.value.trim();
@@ -745,16 +770,20 @@ downloadBtn.addEventListener('click', buildAndDownload);
    START OVER
    ══════════════════════════════════════════════════════════ */
 
+const LUISS_LOGO_URL = './assets/luiss_logo.png';
+
+
+
 const DEFAULTS = {
-  orgName:     'My Organization',
-  passTitle:   'My Pass',
-  field1Label: 'Member',
-  field1Value: 'Gold',
+  orgName:     'LUISS University',
+  passTitle:   'LUISS University',
+  field1Label: 'Role',
+  field1Value: 'Student',
   field2Label: '',
   field2Value: '',
-  bg:          '#1a1a2e',
+  bg:          '#021e3a',
   fg:          '#ffffff',
-  label:       '#9090bb',
+  label:       '#7aa3cc',
 };
 
 function startOver() {
@@ -764,6 +793,8 @@ function startOver() {
   // Text fields
   orgNameInput.value      = DEFAULTS.orgName;
   passTitleInput.value    = DEFAULTS.passTitle;
+  firstNameInput.value    = '';
+  lastNameInput.value     = '';
   field1LabelInput.value  = DEFAULTS.field1Label;
   field1ValueInput.value  = DEFAULTS.field1Value;
   field2LabelInput.value  = DEFAULTS.field2Label;
@@ -774,17 +805,15 @@ function startOver() {
   fgColorInput.value       = DEFAULTS.fg;    fgColorHexInput.value    = DEFAULTS.fg;
   labelColorInput.value    = DEFAULTS.label; labelColorHexInput.value = DEFAULTS.label;
 
-  // Mark first preset active
-  presetBtns.forEach((b, i) => b.classList.toggle('active', i === 0));
+  // No preset matches LUISS defaults — clear all active states
+  presetBtns.forEach(b => b.classList.remove('active'));
 
   // QR data URL
   state.qrDataUrl          = '';
 
-  // Logo
-  state.logoDataUrl        = null;
-  state.logoFile           = null;
-  logoFileInput.value      = '';
-  logoFileName.textContent = 'No file chosen';
+  // Logo — restore LUISS default
+  logoFileInput.value = '';
+  loadDefaultLogo();
 
   // Certificate
   p12File.value                  = '';
@@ -793,6 +822,20 @@ function startOver() {
 
   downloadNote.textContent = 'Upload a QR code image to enable download.';
   renderPreview();
+}
+
+/* ── Load LUISS logo as default ── */
+async function loadDefaultLogo() {
+  try {
+    const resp = await fetch(LUISS_LOGO_URL);
+    const blob = await resp.blob();
+    state.logoFile = new File([blob], 'luiss_logo.png', { type: 'image/png' });
+    state.logoDataUrl = await blobToDataUrl(blob);
+    logoFileName.textContent = 'luiss_logo.png';
+    renderPreview();
+  } catch (e) {
+    // fallback: no logo
+  }
 }
 
 document.getElementById('startOverBtn').addEventListener('click', startOver);
@@ -837,6 +880,10 @@ function buildWebPassHtml(iconDataUrl) {
   const bg = bgColorInput.value;
   const fg = fgColorInput.value;
   const lc = labelColorInput.value;
+
+  const wFirstName = firstNameInput.value.trim();
+  const wLastName  = lastNameInput.value.trim();
+  const wFullName  = escHtml([wFirstName, wLastName].filter(Boolean).join(' '));
 
   const f1l   = escHtml(field1LabelInput.value.trim());
   const f1v   = escHtml(field1ValueInput.value.trim() || '—');
@@ -905,6 +952,7 @@ body{background:${bg};min-height:100dvh;display:flex;flex-direction:column;align
       <span class="ppl">Title</span>
       <span class="ppv">${title}</span>
     </div>
+    ${wFullName ? `<div style="margin-bottom:12px;font-size:1rem;font-weight:600;color:${fg};">${wFullName}</div>` : ''}
     <div class="pf">
       <div style="display:flex;flex-direction:column;gap:2px;">
         <span style="font-size:9px;font-weight:600;letter-spacing:.08em;color:${lc};text-transform:uppercase;">${f1l || '&nbsp;'}</span>

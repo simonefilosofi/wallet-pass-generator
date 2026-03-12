@@ -754,6 +754,18 @@ input[type="file"] { display: none; }
   transition: color 0.25s;
 }
 
+.pass-name {
+  margin-bottom: 12px;
+}
+
+.pass-name-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--pass-fg);
+  letter-spacing: 0.01em;
+  transition: color 0.25s;
+}
+
 .pass-fields {
   display: flex;
   gap: 20px;
