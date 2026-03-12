@@ -480,7 +480,7 @@ function buildPassJson() {
   }
 
   return {
-    formatVersion:      1,
+    formatVersion: 1,
     passTypeIdentifier: 'pass.com.walletpass.generator',
     teamIdentifier:     'TEAMID0000',
     serialNumber:       crypto.randomUUID(),
@@ -503,4 +503,33 @@ function buildPassJson() {
       },
     ],
   };
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   MANIFEST.JSON GENERATION
+   ══════════════════════════════════════════════════════════ */
+
+/** SHA-1 hash a Blob or ArrayBuffer → lowercase hex string */
+async function sha1Hex(source) {
+  const buffer = source instanceof ArrayBuffer ? source : await source.arrayBuffer();
+  const digest = await crypto.subtle.digest('SHA-1', buffer);
+  return Array.from(new Uint8Array(digest))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+/**
+ * Build the manifest object and return it alongside the file map
+ * so the same blobs can be reused when assembling the ZIP.
+ *
+ * files: { [filename]: Blob | ArrayBuffer }
+ * returns: { manifest: object, manifestJson: string }
+ */
+async function buildManifest(files) {
+  const manifest = {};
+  for (const [name, data] of Object.entries(files)) {
+    manifest[name] = await sha1Hex(data);
+  }
+  return { manifest, manifestJson: JSON.stringify(manifest) };
 }
