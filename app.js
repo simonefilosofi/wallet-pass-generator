@@ -958,7 +958,7 @@ async function buildAndSaveWebPass() {
   }
 }
 
-webPassBtn.addEventListener('click', buildAndSaveWebPass);
+if (webPassBtn) webPassBtn.addEventListener('click', buildAndSaveWebPass);
 
 
 /* ══════════════════════════════════════════════════════════
