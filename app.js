@@ -744,7 +744,7 @@ const DEFAULTS = {
   field1Value: 'Student',
   field2Label: '',
   field2Value: '',
-  bg:          '#021e3a',
+  bg:          '#15396c',
   fg:          '#ffffff',
   label:       '#7aa3cc',
 };
@@ -1009,6 +1009,7 @@ async function buildAndDownloadSigned() {
       label:         field1LabelInput.value.trim() || '',
       value:         field1ValueInput.value.trim() || '',
       color:         bgColorInput.value,
+      logoURL:       'https://raw.githubusercontent.com/simonefilosofi/wallet-pass-generator/main/assets/luiss_logo.png',
     };
 
     const response = await fetch(WORKER_URL, {
