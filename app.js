@@ -640,3 +640,85 @@ async function generateSignature(manifestJson) {
   if (p12File.files[0]) return signWithP12(manifestJson);
   return STUB_SIGNATURE;
 }
+
+
+/* ══════════════════════════════════════════════════════════
+   ZIP ASSEMBLY + DOWNLOAD
+   ══════════════════════════════════════════════════════════ */
+
+/**
+ * Orchestrates the full pass build pipeline and triggers a download:
+ *
+ *  1. Generate icon blobs (canvas letter or uploaded logo)
+ *  2. Serialise pass.json
+ *  3. Build file map → compute manifest (SHA-1 of every file)
+ *  4. Sign the manifest JSON
+ *  5. Pack everything into a JSZip → download as pass.pkpass
+ */
+async function buildAndDownload() {
+  downloadBtn.disabled = true;
+  downloadNote.textContent = 'Building pass…';
+
+  try {
+    /* ── 1. Icons ── */
+    const { icon, icon2x } = await generateIconBlobs();
+
+    /* ── 2. pass.json ── */
+    const passJson       = buildPassJson();
+    const passJsonString = JSON.stringify(passJson);
+    const passJsonBytes  = new TextEncoder().encode(passJsonString);
+
+    /* ── 3. Manifest ── */
+    // Collect every file that goes into the ZIP so hashes are computed
+    // over the exact same bytes that JSZip will store.
+    const files = {
+      'pass.json':   passJsonBytes,
+      'icon.png':    icon,
+      'icon@2x.png': icon2x,
+    };
+
+    if (state.logoFile) {
+      const logoBytes = await state.logoFile.arrayBuffer();
+      files['logo.png'] = logoBytes;
+    }
+
+    const { manifestJson } = await buildManifest(files);
+
+    /* ── 4. Signature ── */
+    const signature = await generateSignature(manifestJson);
+
+    /* ── 5. ZIP ── */
+    const zip = new JSZip();
+
+    zip.file('pass.json',     passJsonBytes);
+    zip.file('manifest.json', manifestJson);
+    zip.file('signature',     signature);
+    zip.file('icon.png',      icon);
+    zip.file('icon@2x.png',   icon2x);
+
+    if (state.logoFile) zip.file('logo.png', files['logo.png']);
+
+    const blob = await zip.generateAsync({
+      type:     'blob',
+      mimeType: 'application/vnd.apple.pkpass',
+    });
+
+    /* ── Trigger download ── */
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href     = url;
+    link.download = 'pass.pkpass';
+    link.click();
+    URL.revokeObjectURL(url);
+
+    downloadNote.textContent = 'pass.pkpass downloaded.';
+  } catch (err) {
+    console.error(err);
+    downloadNote.textContent = `Error: ${err.message}`;
+  } finally {
+    downloadBtn.disabled = !state.barcodeData.trim();
+  }
+}
+
+/* ── Wire up the download button ── */
+downloadBtn.addEventListener('click', buildAndDownload);
