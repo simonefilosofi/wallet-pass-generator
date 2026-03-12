@@ -101,15 +101,6 @@
           <input type="text" id="passTitle" placeholder="e.g. My Train Ticket" value="LUISS University">
         </div>
 
-        <div class="form-group">
-          <label>Logo <span class="hint">(optional — replaces letter)</span></label>
-          <div class="file-row">
-            <label class="file-btn" for="logoFileInput">Choose image</label>
-            <input type="file" id="logoFileInput" accept="image/*">
-            <span class="file-name" id="logoFileName">No file chosen</span>
-          </div>
-        </div>
-
         <div class="form-row">
           <div class="form-group">
             <label for="firstName">First name</label>
@@ -132,17 +123,13 @@
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="field2Label">Label 2 <span class="hint">(optional)</span></label>
-            <input type="text" id="field2Label" placeholder="e.g. Date">
-          </div>
-          <div class="form-group">
-            <label for="field2Value">Value 2</label>
-            <input type="text" id="field2Value" placeholder="e.g. 12 Mar 2026">
-          </div>
-        </div>
+        <input type="hidden" id="field2Label">
+        <input type="hidden" id="field2Value">
       </section>
+
+      <!-- Logo file input hidden — logo loaded from default -->
+      <input type="file" id="logoFileInput" accept="image/*" style="display:none">
+      <span id="logoFileName" style="display:none">luiss_logo.png</span>
 
       <!-- Colors fixed to LUISS brand — hidden inputs keep JS working -->
       <input type="hidden" id="bgColor"       value="#021e3a">
