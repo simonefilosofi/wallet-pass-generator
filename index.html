@@ -91,10 +91,9 @@
       <section class="card">
         <h2>Customise</h2>
 
-        <div class="form-group">
-          <label for="orgName">Organization name</label>
-          <input type="text" id="orgName" placeholder="e.g. Trenitalia" value="LUISS University">
-        </div>
+        <input type="hidden" id="orgName" value="LUISS University">
+        <input type="hidden" id="firstName">
+        <input type="hidden" id="lastName">
 
         <div class="form-group">
           <label for="passTitle">Pass title <span class="hint">(large text on card)</span></label>
@@ -103,23 +102,12 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label for="firstName">First name</label>
-            <input type="text" id="firstName" placeholder="e.g. Marco">
-          </div>
-          <div class="form-group">
-            <label for="lastName">Last name</label>
-            <input type="text" id="lastName" placeholder="e.g. Rossi">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
             <label for="field1Label">Label</label>
-            <input type="text" id="field1Label" placeholder="e.g. Seat" value="Role">
+            <input type="text" id="field1Label" placeholder="e.g. Student" value="">
           </div>
           <div class="form-group">
-            <label for="field1Value">Value</label>
-            <input type="text" id="field1Value" placeholder="e.g. 14A" value="Student">
+            <label for="field1Value">Name and surname</label>
+            <input type="text" id="field1Value" placeholder="e.g. Mario Rossi" value="">
           </div>
         </div>
 
@@ -258,7 +246,7 @@
             <div class="pass-fields" id="passFieldsPreview">
               <div class="pass-field" id="passField1">
                 <span class="pass-field-label" id="passField1Label">ROLE</span>
-                <span class="pass-field-value" id="passField1Value">Student</span>
+                <span class="pass-field-value" id="passField1Value"></span>
               </div>
               <div class="pass-field hidden" id="passField2">
                 <span class="pass-field-label" id="passField2Label"></span>
