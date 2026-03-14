@@ -9,9 +9,9 @@
   --border-focus:  rgba(255,255,255,0.3);
   --text-primary:  #eef3fa;
   --text-secondary:#7aaace;
-  --text-hint:     #3a5a7a;
-  --accent:        #1e6bd6;
-  --accent-hover:  #155ec4;
+  --text-hint:     #4a6d8c;
+  --accent:        #15396c;
+  --accent-hover:  #0f2d57;
   --danger:        #f87171;
   --success:       #34d399;
   --radius-sm:     6px;
@@ -87,7 +87,7 @@ h1 {
 
 /* ── Info strip (how it works + notices) ── */
 .info-strip {
-  background: var(--surface);
+  background: var(--app-bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -178,8 +178,8 @@ h1 {
 }
 
 .notice-ios {
-  background: rgba(30, 107, 214, 0.1);
-  border: 1px solid rgba(30, 107, 214, 0.25);
+  background: rgba(21, 57, 108, 0.1);
+  border: 1px solid rgba(21, 57, 108, 0.25);
   color: var(--accent);
 }
 
@@ -242,7 +242,7 @@ main {
 .drop-zone:focus,
 .drop-zone.drag-over {
   border-color: var(--accent);
-  background: rgba(30, 107, 214, 0.06);
+  background: rgba(21, 57, 108, 0.06);
   outline: none;
 }
 
@@ -402,7 +402,7 @@ input[type="text"]:focus,
 input[type="password"]:focus,
 select:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(30,107,214,0.18);
+  box-shadow: 0 0 0 3px rgba(21,57,108,0.18);
 }
 
 select {
@@ -464,7 +464,7 @@ select option { background: var(--surface-raised); }
 
 .color-pair:focus-within {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(30,107,214,0.18);
+  box-shadow: 0 0 0 3px rgba(21,57,108,0.18);
 }
 
 input[type="color"] {
@@ -645,13 +645,13 @@ input[type="file"] { display: none; }
 
 .name-input {
   border-color: var(--accent) !important;
-  box-shadow: 0 0 0 3px rgba(30, 107, 214, 0.15);
+  box-shadow: 0 0 0 3px rgba(21, 57, 108, 0.15);
   font-size: 1rem !important;
   padding: 11px 14px !important;
 }
 
 .name-input:focus {
-  box-shadow: 0 0 0 4px rgba(30, 107, 214, 0.28) !important;
+  box-shadow: 0 0 0 4px rgba(21, 57, 108, 0.28) !important;
 }
 
 .name-hint {
@@ -781,7 +781,7 @@ input[readonly]:focus {
 }
 
 .web-pass-btn:hover {
-  background: rgba(30,107,214,0.1);
+  background: rgba(21,57,108,0.1);
 }
 
 .web-pass-btn:disabled {
@@ -826,18 +826,18 @@ input[readonly]:focus {
   letter-spacing: -0.01em;
   cursor: pointer;
   transition: background 0.15s, opacity 0.15s, transform 0.1s, box-shadow 0.15s;
-  box-shadow: 0 4px 20px rgba(30, 107, 214, 0.35);
+  box-shadow: 0 4px 20px rgba(21, 57, 108, 0.35);
 }
 
 .cta-btn:hover:not(:disabled) {
   background: var(--accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 28px rgba(30, 107, 214, 0.45);
+  box-shadow: 0 6px 28px rgba(21, 57, 108, 0.45);
 }
 
 .cta-btn:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(30, 107, 214, 0.25);
+  box-shadow: 0 2px 10px rgba(21, 57, 108, 0.25);
 }
 
 .cta-btn:disabled {
@@ -887,7 +887,7 @@ input[readonly]:focus {
 .pass-card {
   --pass-bg:    #1a1a2e;
   --pass-fg:    #ffffff;
-  --pass-label: #9090bb;
+  --pass-label: #7aaace;
 
   background: var(--pass-bg);
   color: var(--pass-fg);
@@ -915,7 +915,7 @@ input[readonly]:focus {
 .pass-logo-img {
   width: 30px;
   height: 30px;
-  border-radius: 7px;
+  border-radius: 50%;
   object-fit: cover;
 }
 
