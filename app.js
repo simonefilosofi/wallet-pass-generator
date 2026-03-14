@@ -10,25 +10,26 @@ const WORKER_URL = 'https://luiss-pass-signer.simonefilosofi.workers.dev';
   const toggle = document.getElementById('themeToggle');
   const icon   = document.getElementById('themeIcon');
   const label  = document.getElementById('themeLabel');
-  const saved  = localStorage.getItem('theme');
-  if (saved === 'light') {
-    document.documentElement.setAttribute('data-theme', 'light');
-    icon.textContent  = '🌙';
-    label.textContent = 'Dark';
-  }
-  toggle.addEventListener('click', () => {
-    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    if (isLight) {
-      document.documentElement.removeAttribute('data-theme');
+
+  function applyTheme(dark) {
+    if (dark) {
+      document.documentElement.setAttribute('data-theme', 'dark');
       icon.textContent  = '☀️';
       label.textContent = 'Light';
-      localStorage.setItem('theme', 'dark');
     } else {
-      document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.removeAttribute('data-theme');
       icon.textContent  = '🌙';
       label.textContent = 'Dark';
-      localStorage.setItem('theme', 'light');
     }
+  }
+
+  const saved = localStorage.getItem('theme');
+  applyTheme(saved === 'dark');
+
+  toggle.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    applyTheme(!isDark);
   });
 })();
 
