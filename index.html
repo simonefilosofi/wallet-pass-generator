@@ -162,6 +162,51 @@
       <input type="hidden" id="labelColor"    value="#7aa3cc">
       <input type="hidden" id="labelColorHex" value="#7aa3cc">
 
+      <!-- PREVIEW (inline between Customise and Signing) -->
+      <aside class="preview-panel">
+        <div class="preview-sticky">
+          <h2>Preview</h2>
+
+          <div class="pass-card" id="passCard">
+
+            <div class="pass-header">
+              <div class="pass-logo-wrap">
+                <img class="pass-logo-img hidden" id="passLogoImg" alt="">
+                <div class="pass-logo-letter" id="passLogoLetter">L</div>
+              </div>
+              <span class="pass-org" id="passOrg">LUISS University</span>
+            </div>
+
+            <div class="pass-body">
+              <div class="pass-name hidden" id="passNameRow">
+                <span class="pass-name-value" id="passNamePreview"></span>
+              </div>
+
+              <div class="pass-fields" id="passFieldsPreview">
+                <div class="pass-field" id="passField1">
+                  <span class="pass-field-label" id="passField1Label">ROLE</span>
+                  <span class="pass-field-value" id="passField1Value"></span>
+                </div>
+                <div class="pass-field hidden" id="passField2">
+                  <span class="pass-field-label" id="passField2Label"></span>
+                  <span class="pass-field-value" id="passField2Value"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pass-barcode">
+              <div class="barcode-box" id="barcodeBox">
+                <canvas id="passQrCanvas" width="64" height="64"></canvas>
+              </div>
+              <span class="barcode-alt" id="barcodeAltPreview">Scan to open</span>
+            </div>
+
+          </div><!-- /pass-card -->
+
+          <p class="preview-note">Approximate preview — exact layout varies by iOS version</p>
+        </div>
+      </aside>
+
       <!-- 4. Signing (collapsed) -->
       <section class="card" style="display:none">
         <button class="collapsible-toggle" id="signingToggle" aria-expanded="false" aria-controls="signingBody">
@@ -251,51 +296,6 @@
       </div>
 
     </div><!-- /editor -->
-
-    <!-- RIGHT: live preview -->
-    <aside class="preview-panel">
-      <div class="preview-sticky">
-        <h2>Preview</h2>
-
-        <div class="pass-card" id="passCard">
-
-          <div class="pass-header">
-            <div class="pass-logo-wrap">
-              <img class="pass-logo-img hidden" id="passLogoImg" alt="">
-              <div class="pass-logo-letter" id="passLogoLetter">L</div>
-            </div>
-            <span class="pass-org" id="passOrg">LUISS University</span>
-          </div>
-
-          <div class="pass-body">
-            <div class="pass-name hidden" id="passNameRow">
-              <span class="pass-name-value" id="passNamePreview"></span>
-            </div>
-
-            <div class="pass-fields" id="passFieldsPreview">
-              <div class="pass-field" id="passField1">
-                <span class="pass-field-label" id="passField1Label">ROLE</span>
-                <span class="pass-field-value" id="passField1Value"></span>
-              </div>
-              <div class="pass-field hidden" id="passField2">
-                <span class="pass-field-label" id="passField2Label"></span>
-                <span class="pass-field-value" id="passField2Value"></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="pass-barcode">
-            <div class="barcode-box" id="barcodeBox">
-              <canvas id="passQrCanvas" width="64" height="64"></canvas>
-            </div>
-            <span class="barcode-alt" id="barcodeAltPreview">Scan to open</span>
-          </div>
-
-        </div><!-- /pass-card -->
-
-        <p class="preview-note">Approximate preview — exact layout varies by iOS version</p>
-      </div>
-    </aside>
 
   </main>
 
