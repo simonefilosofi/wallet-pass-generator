@@ -16,16 +16,42 @@
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin':  '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
 export default {
   async fetch(request, env) {
+    const url = new URL(request.url);
 
     // Handle CORS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: CORS_HEADERS });
+    }
+
+    // Usage stats proxy endpoint
+    if (request.method === 'GET' && url.pathname === '/usage') {
+      let upstream;
+      try {
+        upstream = await fetch('https://api.walletwallet.dev/api/auth/usage', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${env.WW_API_KEY}`,
+          },
+        });
+      } catch (err) {
+        return new Response(`Upstream fetch failed: ${err.message}`, { status: 502, headers: CORS_HEADERS });
+      }
+
+      const data = await upstream.text();
+
+      return new Response(data, {
+        status: upstream.status,
+        headers: {
+          ...CORS_HEADERS,
+          'Content-Type': 'application/json',
+        },
+      });
     }
 
     if (request.method !== 'POST') {

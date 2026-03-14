@@ -1046,6 +1046,53 @@ const signingStatusText = document.getElementById('signingStatusText');
 const signedBtn         = document.getElementById('signedBtn');
 const signedBtnIdle     = signedBtn.querySelector('.btn-idle');
 const signedBtnLoading  = signedBtn.querySelector('.btn-loading');
+const usageTrackerCount = document.getElementById('usageTrackerCount');
+const usageTrackerMeta  = document.getElementById('usageTrackerMeta');
+
+let usageRefreshInterval = null;
+
+function setUsageTracker(countText, metaText) {
+  if (usageTrackerCount) usageTrackerCount.textContent = countText;
+  if (usageTrackerMeta) usageTrackerMeta.textContent = metaText;
+}
+
+function usageSentence(count) {
+  const noun = count === 1 ? 'studente' : 'studenti';
+  return `${count} ${noun} hanno gia scaricato il loro badge questo mese`;
+}
+
+async function refreshUsageTracker() {
+  if (!WORKER_URL) {
+    setUsageTracker('-- studenti hanno gia scaricato il loro badge questo mese', 'Aggiornato ora');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${WORKER_URL.replace(/\/$/, '')}/usage`, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Usage error ${response.status}`);
+    }
+
+    const payload = await response.text();
+    let count = 0;
+
+    try {
+      const usage = JSON.parse(payload);
+      count = Number.isFinite(usage.count) ? usage.count : Number.parseInt(usage.count, 10) || 0;
+    } catch {
+      const match = payload.match(/"count"\s*:\s*(\d+)/i);
+      count = match ? Number.parseInt(match[1], 10) : 0;
+    }
+
+    setUsageTracker(usageSentence(count), 'Aggiornato ora');
+  } catch (err) {
+    setUsageTracker('-- studenti hanno gia scaricato il loro badge questo mese', 'Aggiornato ora');
+  }
+}
 
 /* Reflect worker availability in the status badge */
 function initSigningStatus() {
@@ -1055,11 +1102,16 @@ function initSigningStatus() {
   }
 
   updateSignedBtnState();
+  refreshUsageTracker();
+
+  if (usageRefreshInterval) clearInterval(usageRefreshInterval);
+  usageRefreshInterval = setInterval(refreshUsageTracker, 30000);
 }
 initSigningStatus();
 
 /* Enable signed button when worker is configured AND barcode data exists */
 function updateSignedBtnState() {
+  if (!signedBtn) return;
   signedBtn.disabled = !WORKER_URL || !canGeneratePass();
 }
 
@@ -1119,6 +1171,7 @@ async function buildAndDownloadSigned() {
     URL.revokeObjectURL(url);
 
     downloadNote.textContent = 'Signed pass.pkpass downloaded.';
+    refreshUsageTracker();
   } catch (err) {
     console.error(err);
     downloadNote.textContent = `Error: ${err.message}`;

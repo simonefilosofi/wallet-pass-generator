@@ -536,6 +536,29 @@ input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
   color: var(--text-hint);
 }
 
+.usage-tracker {
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.usage-tracker-top {
+  padding: 2px 4px;
+}
+
+.usage-tracker-count {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+.usage-tracker-meta {
+  font-size: 0.7rem;
+  color: var(--text-hint);
+}
+
 .badge-optional {
   font-size: 0.68rem;
   font-weight: 500;
