@@ -349,19 +349,19 @@ function renderPreview() {
     passNameRow.classList.add('hidden');
   }
 
-  // Secondary field 1 (always visible)
-  passField1LabelEl.textContent = (field1LabelInput.value.trim() || 'Field').toUpperCase();
-  passField1ValueEl.textContent =  field1ValueInput.value.trim() || '—';
+  // Match signed pass template: one unified label/value line.
+  const combinedLabel = [
+    field1LabelInput.value.trim() || 'Student',
+    field2LabelInput.value.trim() || 'Matricola',
+  ].join(' - ');
+  const combinedValue = [
+    field1ValueInput.value.trim(),
+    field2ValueInput.value.trim(),
+  ].filter(Boolean).join(' - ');
 
-  // Secondary field 2 — show only when user has typed something
-  const has2 = field2LabelInput.value.trim() || field2ValueInput.value.trim();
-  if (has2) {
-    passField2.classList.remove('hidden');
-    passField2LabelEl.textContent = field2LabelInput.value.trim().toUpperCase();
-    passField2ValueEl.textContent = field2ValueInput.value.trim() || '—';
-  } else {
-    passField2.classList.add('hidden');
-  }
+  passField1LabelEl.textContent = combinedLabel.toUpperCase();
+  passField1ValueEl.textContent = combinedValue || '—';
+  passField2.classList.add('hidden');
 
   // Barcode alt text — show decoded data (truncated) or fallback
   const alt = state.barcodeData;
