@@ -938,7 +938,7 @@ async function getSignedPassThumbnailUrl() {
     const resp = await fetch(LUISS_LOGO_W2_ASSET_PATH);
     const blob = await resp.blob();
     const dataUrl = await blobToDataUrl(blob);
-    return imageDataUrlToPngDataUrl(dataUrl, 375, 123, 'contain');
+    return imageDataUrlToPngDataUrl(dataUrl, 180, 180, 'contain');
   } catch {
     return null;
   }
@@ -1187,10 +1187,7 @@ async function buildAndDownloadSigned() {
       field2ValueInput.value.trim(),
     ].filter(Boolean).join(' - ');
 
-    const [logoURL, thumbnailURL] = await Promise.all([
-      getSignedPassLogoUrl(),
-      getSignedPassThumbnailUrl(),
-    ]);
+    const logoURL = await getSignedPassThumbnailUrl();
 
     const body = {
       barcodeValue:  state.barcodeData,
@@ -1199,8 +1196,7 @@ async function buildAndDownloadSigned() {
       label:         combinedLabel,
       value:         combinedValue,
       color:         bgColorInput.value,
-      ...(logoURL      ? { logoURL }      : {}),
-      ...(thumbnailURL ? { stripURL: thumbnailURL } : {}),
+      ...(logoURL ? { logoURL } : {}),
     };
 
     const response = await fetch(WORKER_URL, {
