@@ -935,10 +935,27 @@ async function getSignedPassLogoUrl() {
 
 async function getSignedPassThumbnailUrl() {
   try {
-    const resp = await fetch(LUISS_LOGO_W2_ASSET_PATH);
-    const blob = await resp.blob();
+    const resp    = await fetch(LUISS_LOGO_W2_ASSET_PATH);
+    const blob    = await resp.blob();
     const dataUrl = await blobToDataUrl(blob);
-    return imageDataUrlToPngDataUrl(dataUrl, 180, 180, 'contain');
+    const size    = 140;
+    const radius  = size / 2; // fully circular — change to e.g. 28 for rounded square
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const cvs = document.createElement('canvas');
+        cvs.width = cvs.height = size;
+        const cx = cvs.getContext('2d');
+        cx.beginPath();
+        cx.arc(size / 2, size / 2, radius, 0, Math.PI * 2);
+        cx.closePath();
+        cx.clip();
+        cx.drawImage(img, 0, 0, size, size);
+        resolve(cvs.toDataURL('image/png'));
+      };
+      img.onerror = () => reject(new Error('logo_w2 load failed'));
+      img.src = dataUrl;
+    });
   } catch {
     return null;
   }
