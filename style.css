@@ -622,6 +622,12 @@ input[type="file"] { display: none; }
 
 
 /* ── Name field highlight ── */
+.customise-hint {
+  margin: -2px 0 14px;
+  font-size: 0.75rem;
+  color: var(--text-hint);
+}
+
 .name-field-group {
   margin-bottom: 0;
 }
