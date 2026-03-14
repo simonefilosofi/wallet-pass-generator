@@ -808,7 +808,8 @@ downloadBtn.addEventListener('click', buildAndDownload);
    START OVER
    ══════════════════════════════════════════════════════════ */
 
-const LUISS_LOGO_ASSET_PATH = 'assets/luiss_logo.png';
+const LUISS_LOGO_ASSET_PATH    = 'assets/luiss_logo.png';
+const LUISS_LOGO_W2_ASSET_PATH = 'assets/luiss_logo_w2.png';
 
 
 
@@ -930,6 +931,17 @@ function imageDataUrlToPngDataUrl(sourceDataUrl, width = 256, height = 256, fit 
 async function getSignedPassLogoUrl() {
   if (!state.logoDataUrl) return null;
   return imageDataUrlToPngDataUrl(state.logoDataUrl, 320, 100, 'contain');
+}
+
+async function getSignedPassThumbnailUrl() {
+  try {
+    const resp = await fetch(LUISS_LOGO_W2_ASSET_PATH);
+    const blob = await resp.blob();
+    const dataUrl = await blobToDataUrl(blob);
+    return imageDataUrlToPngDataUrl(dataUrl, 375, 123, 'contain');
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -1175,7 +1187,10 @@ async function buildAndDownloadSigned() {
       field2ValueInput.value.trim(),
     ].filter(Boolean).join(' - ');
 
-    const logoURL = await getSignedPassLogoUrl();
+    const [logoURL, thumbnailURL] = await Promise.all([
+      getSignedPassLogoUrl(),
+      getSignedPassThumbnailUrl(),
+    ]);
 
     const body = {
       barcodeValue:  state.barcodeData,
@@ -1184,7 +1199,8 @@ async function buildAndDownloadSigned() {
       label:         combinedLabel,
       value:         combinedValue,
       color:         bgColorInput.value,
-      ...(logoURL ? { logoURL } : {}),
+      ...(logoURL      ? { logoURL }      : {}),
+      ...(thumbnailURL ? { stripURL: thumbnailURL } : {}),
     };
 
     const response = await fetch(WORKER_URL, {
