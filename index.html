@@ -78,76 +78,78 @@
     <!-- LEFT: editor -->
     <div class="editor">
 
-      <!-- 1. Hero upload -->
-      <section class="card hero-card">
-        <h2>Upload your QR code</h2>
-        <p class="section-desc">Drop a screenshot containing your Luiss badge.</p>
+      <!-- 1 + 2. Upload and Customise (single flow card) -->
+      <section class="card flow-card">
+        <div class="flow-section flow-upload">
+          <h2>Upload your QR code</h2>
+          <p class="section-desc">Drop a screenshot containing your Luiss badge.</p>
 
-        <div class="drop-zone" id="dropZone" role="button" tabindex="0" aria-label="Upload QR code image">
-          <input type="file" id="qrFileInput" accept="image/*" aria-hidden="true">
+          <div class="drop-zone" id="dropZone" role="button" tabindex="0" aria-label="Upload QR code image">
+            <input type="file" id="qrFileInput" accept="image/*" aria-hidden="true">
 
-          <!-- idle state -->
-          <div class="drop-idle" id="dropIdle">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <rect x="4" y="4" width="40" height="40" rx="10" stroke="currentColor" stroke-width="2" stroke-dasharray="6 4"/>
-              <path d="M24 30V18m0 0-6 6m6-6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span class="drop-label">Drop image here</span>
-            <span class="drop-sub">or <span class="drop-link">click to browse</span></span>
+            <!-- idle state -->
+            <div class="drop-idle" id="dropIdle">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <rect x="4" y="4" width="40" height="40" rx="10" stroke="currentColor" stroke-width="2" stroke-dasharray="6 4"/>
+                <path d="M24 30V18m0 0-6 6m6-6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="drop-label">Drop image here</span>
+              <span class="drop-sub">or <span class="drop-link">click to browse</span></span>
+            </div>
+
+            <!-- preview state (hidden until image loaded) -->
+            <div class="drop-preview hidden" id="dropPreview">
+              <img id="qrPreviewImg" alt="Uploaded QR code">
+              <button class="drop-clear" id="dropClear" title="Remove image" aria-label="Remove image">✕</button>
+            </div>
           </div>
 
-          <!-- preview state (hidden until image loaded) -->
-          <div class="drop-preview hidden" id="dropPreview">
-            <img id="qrPreviewImg" alt="Uploaded QR code">
-            <button class="drop-clear" id="dropClear" title="Remove image" aria-label="Remove image">✕</button>
+          <!-- decode result -->
+          <div class="decode-result hidden" id="decodeResult">
+            <div class="decode-status" id="decodeStatus">
+              <svg class="icon-check" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span id="decodeStatusText">QR code detected</span>
+            </div>
+            <div class="form-group" style="display:none" aria-hidden="true">
+              <label for="barcodeData">Decoded data <span class="hint">(edit if needed)</span></label>
+              <input type="text" id="barcodeData" placeholder="Decoded QR content" autocomplete="off" spellcheck="false">
+            </div>
           </div>
-        </div>
 
-        <!-- decode result -->
-        <div class="decode-result hidden" id="decodeResult">
-          <div class="decode-status" id="decodeStatus">
-            <svg class="icon-check" width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <!-- decode error -->
+          <div class="decode-error hidden" id="decodeError">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 5v3.5M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
-            <span id="decodeStatusText">QR code detected</span>
-          </div>
-          <div class="form-group" style="display:none" aria-hidden="true">
-            <label for="barcodeData">Decoded data <span class="hint">(edit if needed)</span></label>
-            <input type="text" id="barcodeData" placeholder="Decoded QR content" autocomplete="off" spellcheck="false">
+            No QR code detected — try a clearer or higher-resolution image.
           </div>
         </div>
 
-        <!-- decode error -->
-        <div class="decode-error hidden" id="decodeError">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M8 5v3.5M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          No QR code detected — try a clearer or higher-resolution image.
-        </div>
-      </section>
+        <div class="flow-divider" aria-hidden="true"></div>
 
-      <!-- 2. Customisation -->
-      <section class="card">
-        <h2>Customise</h2>
-        <p class="customise-hint">Fill in your name and matricola below</p>
+        <div class="flow-section flow-customise">
 
-        <input type="hidden" id="firstName">
-        <input type="hidden" id="lastName">
-        <input type="hidden" id="orgName" value="Luiss Guido Carli">
-        <input type="hidden" id="passTitle" value="Luiss Guido Carli">
-        <input type="hidden" id="field1Label" value="Studente">
-        <input type="hidden" id="field2Label" value="Matricola">
 
-        <div class="form-group name-field-group">
-          <label for="field1Value">Your full name <span class="required-star">*</span></label>
-          <input class="name-input" type="text" id="field1Value" placeholder="e.g. Mario Rossi" value="" pattern="[A-Za-zÀ-ÖØ-öø-ÿ ]+" autocomplete="name">
-        </div>
+          <input type="hidden" id="firstName">
+          <input type="hidden" id="lastName">
+          <input type="hidden" id="orgName" value="Luiss Guido Carli">
+          <input type="hidden" id="passTitle" value="Luiss Guido Carli">
+          <input type="hidden" id="field1Label" value="Studente">
+          <input type="hidden" id="field2Label" value="Matricola">
 
-        <div class="form-group">
-          <label for="field2Value">Matricola <span class="required-star">*</span></label>
-          <input class="name-input" type="text" id="field2Value" value="" placeholder="e.g. 123456" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" autocomplete="off">
+          <div class="form-group name-field-group">
+            <label for="field1Value">Your full name <span class="required-star">*</span></label>
+            <input class="name-input" type="text" id="field1Value" placeholder="e.g. Mario Rossi" value="" pattern="[A-Za-zÀ-ÖØ-öø-ÿ ]+" autocomplete="name">
+          </div>
+
+          <div class="form-group">
+            <label for="field2Value">Matricola <span class="required-star">*</span></label>
+            <input class="name-input" type="text" id="field2Value" value="" placeholder="e.g. 123456" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" autocomplete="off">
+          </div>
         </div>
       </section>
 

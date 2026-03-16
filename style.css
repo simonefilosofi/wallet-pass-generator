@@ -272,10 +272,23 @@ main {
   line-height: 1.55;
 }
 
+.flow-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.flow-section {
+  padding: 22px 22px 20px;
+}
+
+.flow-divider {
+  height: 1px;
+  margin: 0 22px;
+  background: var(--border);
+}
+
 
 /* ── Hero drop zone ── */
-.hero-card { }
-
 .drop-zone {
   position: relative;
   border: 2px dashed var(--border-focus);
@@ -657,16 +670,17 @@ input[type="file"] { display: none; }
 
 /* ── Name field highlight ── */
 .customise-hint {
-  margin: -2px 0 14px;
+  margin: 0 0 14px;
   font-size: 0.75rem;
   color: var(--text-hint);
 }
 
 .name-field-group {
-  margin-bottom: 0;
+  margin-bottom: 8px;
 }
 
-.name-field-group label {
+.name-field-group label,
+.flow-customise label[for="field2Value"] {
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--text-primary);
