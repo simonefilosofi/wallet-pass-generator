@@ -58,6 +58,49 @@ const NOTE_UPLOAD_QR = 'Upload a QR code image to enable download.';
 const NOTE_FILL_FIELDS = 'Enter your full name and matricola to enable download.';
 const NOTE_INVALID_ID = 'Matricola must be exactly 6 digits.';
 const NOTE_INVALID_NAME = 'Full name must contain letters only.';
+const NOTE_NAME_MISMATCH = 'The name entered does not match the uploaded QR code.';
+const NOTE_INCOMPLETE_NAME = 'Please enter both your first name and surname.';
+
+/* ── Italian Fiscal Code name validation ── */
+function _cfNormalize(str) {
+  return str.toUpperCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^A-Z]/g, '');
+}
+
+function _cfCognome(cognome) {
+  const s = _cfNormalize(cognome);
+  const cons = s.replace(/[AEIOU]/g, '');
+  const vowels = s.replace(/[^AEIOU]/g, '');
+  return (cons + vowels + 'XXX').slice(0, 3);
+}
+
+function _cfNome(nome) {
+  const s = _cfNormalize(nome);
+  const cons = s.replace(/[AEIOU]/g, '');
+  if (cons.length >= 4) return cons[0] + cons[2] + cons[3];
+  const vowels = s.replace(/[^AEIOU]/g, '');
+  return (cons + vowels + 'XXX').slice(0, 3);
+}
+
+function hasFullNameWithSurname() {
+  const words = field1ValueInput.value.trim().split(/\s+/).filter(Boolean);
+  return words.length >= 2;
+}
+
+function cfMatchesName(cf, fullName) {
+  // Only validate if QR content looks like a CF (16 alphanumeric chars)
+  if (!cf || !/^[A-Z0-9]{16}$/i.test(cf.trim())) return true;
+  const cfPrefix = cf.trim().toUpperCase().slice(0, 6);
+  const words = fullName.trim().split(/\s+/).filter(Boolean);
+  if (words.length < 2) return false;
+  const first = words[0];
+  const last  = words.slice(1).join(' ');
+  // Try both orderings: nome+cognome and cognome+nome
+  const opt1 = _cfCognome(last)  + _cfNome(first);
+  const opt2 = _cfCognome(first) + _cfNome(last);
+  return cfPrefix === opt1 || cfPrefix === opt2;
+}
 
 /* ── Hidden canvas for QR decoding ── */
 const canvas = document.createElement('canvas');
@@ -82,7 +125,9 @@ function hasRequiredIdentityFields() {
 }
 
 function canGeneratePass() {
-  return !!(state.barcodeData.trim() && hasRequiredIdentityFields());
+  if (!state.barcodeData.trim() || !hasRequiredIdentityFields()) return false;
+  if (!hasFullNameWithSurname()) return false;
+  return cfMatchesName(state.barcodeData, field1ValueInput.value.trim());
 }
 
 function updateDownloadBtnState() {
@@ -105,11 +150,23 @@ function updateDownloadBtnState() {
     return;
   }
 
+  if (!hasFullNameWithSurname()) {
+    downloadNote.textContent = NOTE_INCOMPLETE_NAME;
+    return;
+  }
+
+  if (!cfMatchesName(state.barcodeData, field1ValueInput.value.trim())) {
+    downloadNote.textContent = NOTE_NAME_MISMATCH;
+    return;
+  }
+
   if (
     downloadNote.textContent === NOTE_UPLOAD_QR
     || downloadNote.textContent === NOTE_FILL_FIELDS
     || downloadNote.textContent === NOTE_INVALID_ID
     || downloadNote.textContent === NOTE_INVALID_NAME
+    || downloadNote.textContent === NOTE_NAME_MISMATCH
+    || downloadNote.textContent === NOTE_INCOMPLETE_NAME
   ) {
     downloadNote.textContent = '';
   }
