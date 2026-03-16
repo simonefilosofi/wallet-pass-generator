@@ -12,7 +12,7 @@
   <header>
     <div class="header-inner">
       <div class="header-brand">
-        <img class="header-logo" src="assets/luiss_logo.png" alt="LUISS logo">
+        <img class="header-logo" src="assets/WhatsApp Image 2026-03-16 at 22.20.53.jpeg" alt="LUISS logo">
         <div>
           <h1>LUISS Student Pass</h1>
           <p class="tagline">Made by a student, for students — not an official LUISS service</p>
@@ -47,8 +47,8 @@
         <div class="how-step">
           <div class="how-icon">2</div>
           <div class="how-text">
-            <strong>Enter your name</strong>
-            <span>It will appear on your pass</span>
+            <strong>Enter your name and matricola</strong>
+     
           </div>
         </div>
 
@@ -67,6 +67,8 @@
         </div>
       </div>
 
+      <p class="how-compact" aria-hidden="true">Upload QR → Fill details → Add to Wallet</p>
+
     </div>
   </div>
 
@@ -76,15 +78,10 @@
     <!-- LEFT: editor -->
     <div class="editor">
 
-      <div class="usage-tracker usage-tracker-top" id="usageTracker" aria-live="polite">
-        <span class="usage-tracker-count" id="usageTrackerCount">-- students have already downloaded their badge this month</span>
-        <span class="usage-tracker-meta" id="usageTrackerMeta">Updated just now</span>
-      </div>
-
       <!-- 1. Hero upload -->
       <section class="card hero-card">
         <h2>Upload your QR code</h2>
-        <p class="section-desc">Drop a screenshot, photo, or any image containing a QR code.</p>
+        <p class="section-desc">Drop a screenshot containing your Luiss badge.</p>
 
         <div class="drop-zone" id="dropZone" role="button" tabindex="0" aria-label="Upload QR code image">
           <input type="file" id="qrFileInput" accept="image/*" aria-hidden="true">
@@ -166,7 +163,84 @@
       <input type="hidden" id="labelColor"    value="#7aa3cc">
       <input type="hidden" id="labelColorHex" value="#7aa3cc">
 
-      <!-- PREVIEW (inline between Customise and Signing) -->
+      <!-- 4. Signing (collapsed) -->
+      <section class="card" style="display:none">
+        <button class="collapsible-toggle" id="signingToggle" aria-expanded="false" aria-controls="signingBody">
+          <span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            Sign with your own certificate <span class="badge-optional">optional</span>
+          </span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <div class="collapsible-body hidden" id="signingBody">
+          <p class="section-desc">
+            Upload your <strong>.p12</strong> certificate to produce a pass that opens on a real iOS device.
+            Without this, the pass works in Xcode Simulator only.
+          </p>
+          <div class="form-group">
+            <label for="p12File">.p12 Certificate file</label>
+            <div class="file-row">
+              <label class="file-btn" for="p12File">Choose file</label>
+              <input type="file" id="p12File" accept=".p12,.pfx">
+              <span class="file-name" id="p12FileName">No file chosen</span>
+            </div>
+          </div>
+          <div class="form-group" id="p12PasswordGroup" style="display:none">
+            <label for="p12Password">Certificate password</label>
+            <input type="password" id="p12Password" placeholder="Leave blank if none" autocomplete="off">
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Download -->
+      <div class="download-row">
+        <div class="usage-tracker" id="usageTracker" aria-live="polite">
+          <span class="usage-tracker-count" id="usageTrackerCount">-- students have already downloaded their badge this month</span>
+          <span class="usage-tracker-meta" id="usageTrackerMeta">Updated just now</span>
+        </div>
+        <button class="cta-btn" id="signedBtn" disabled>
+          <span class="btn-idle">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <rect x="2" y="7" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="2"/>
+              <path d="M2 13h18" stroke="currentColor" stroke-width="2"/>
+              <circle cx="6.5" cy="17" r="1.3" fill="currentColor"/>
+            </svg>
+            Add to Apple Wallet
+          </span>
+          <span class="btn-loading hidden">
+            <svg class="spinner" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" stroke-opacity="0.35"/>
+              <path d="M10 2a8 8 0 0 1 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Adding to Wallet…
+          </span>
+        </button>
+        <button class="download-btn" id="downloadBtn" disabled>
+          <span class="btn-idle">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 11V4m0 7-2.5-2.5M8 11l2.5-2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2.5 13h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            Download file (simulator only)
+          </span>
+          <span class="btn-loading hidden">
+            <svg class="spinner" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.8" stroke-opacity="0.35"/>
+              <path d="M8 2a6 6 0 0 1 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Building…
+          </span>
+        </button>
+        <p class="download-note" id="downloadNote">Upload a QR code image to enable download.</p>
+      </div>
+
+      <!-- PREVIEW (moved below primary actions) -->
       <aside class="preview-panel">
         <div class="preview-sticky">
           <h2>Preview</h2>
@@ -211,94 +285,6 @@
         </div>
       </aside>
 
-      <!-- 4. Signing (collapsed) -->
-      <section class="card" style="display:none">
-        <button class="collapsible-toggle" id="signingToggle" aria-expanded="false" aria-controls="signingBody">
-          <span>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
-              <path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-            </svg>
-            Sign with your own certificate <span class="badge-optional">optional</span>
-          </span>
-          <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-
-        <div class="collapsible-body hidden" id="signingBody">
-          <p class="section-desc">
-            Upload your <strong>.p12</strong> certificate to produce a pass that opens on a real iOS device.
-            Without this, the pass works in Xcode Simulator only.
-          </p>
-          <div class="form-group">
-            <label for="p12File">.p12 Certificate file</label>
-            <div class="file-row">
-              <label class="file-btn" for="p12File">Choose file</label>
-              <input type="file" id="p12File" accept=".p12,.pfx">
-              <span class="file-name" id="p12FileName">No file chosen</span>
-            </div>
-          </div>
-          <div class="form-group" id="p12PasswordGroup" style="display:none">
-            <label for="p12Password">Certificate password</label>
-            <input type="password" id="p12Password" placeholder="Leave blank if none" autocomplete="off">
-          </div>
-        </div>
-      </section>
-
-      <!-- 4b. Online signing via proxy -->
-      <section class="card signing-status-card">
-        <div class="signing-status" id="signingStatus">
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-            <circle cx="7.5" cy="7.5" r="6.5" stroke="currentColor" stroke-width="1.4"/>
-            <path d="M5 7.5l2 2 3.5-3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span id="signingStatusText">Signing service ready</span>
-        </div>
-        <p class="section-desc" style="margin-top:6px;margin-bottom:0;font-size:0.75rem;">
-          Passes are signed via a private proxy — works on real iPhones, no account needed.
-        </p>
-      </section>
-
-      <!-- 5. Download -->
-      <div class="download-row">
-        <button class="cta-btn" id="signedBtn" disabled>
-          <span class="btn-idle">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <rect x="2" y="7" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="2"/>
-              <path d="M2 13h18" stroke="currentColor" stroke-width="2"/>
-              <circle cx="6.5" cy="17" r="1.3" fill="currentColor"/>
-            </svg>
-            Add to Apple Wallet
-          </span>
-          <span class="btn-loading hidden">
-            <svg class="spinner" width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" stroke-opacity="0.35"/>
-              <path d="M10 2a8 8 0 0 1 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Adding to Wallet…
-          </span>
-        </button>
-        <button class="download-btn" id="downloadBtn" disabled>
-          <span class="btn-idle">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 11V4m0 7-2.5-2.5M8 11l2.5-2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2.5 13h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-            Download file (simulator only)
-          </span>
-          <span class="btn-loading hidden">
-            <svg class="spinner" width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.8" stroke-opacity="0.35"/>
-              <path d="M8 2a6 6 0 0 1 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            Building…
-          </span>
-        </button>
-        <button class="start-over-btn" id="startOverBtn">Start over</button>
-        <p class="download-note" id="downloadNote">Upload a QR code image to enable download.</p>
-      </div>
-
     </div><!-- /editor -->
 
   </main>
@@ -322,7 +308,16 @@
       </div>
     </div>
   </footer>
-  <p style="text-align:center; font-size:11px; color:#555; margin: 12px 0 8px;">by <a href="https://simonefilosofi.github.io" style="color:#777; text-decoration:none;">@simonefilosofi</a></p>
+  <div class="credits-block">
+    <p class="credits-author">by <a href="https://simonefilosofi.github.io">@simonefilosofi</a></p>
+    <div class="empowered-block">
+      <p class="empowered-label">empowered by</p>
+      <div class="empowered-logos">
+        <img class="empowered-logo universa-logo" src="assets/univresa_logo.jpeg" alt="Universa logo">
+        <img class="empowered-logo gdg-logo" src="assets/gdg_logo.png" alt="GDG logo">
+      </div>
+    </div>
+  </div>
 
   <script src="lib/jsQR.min.js"></script>
   <script src="lib/forge.min.js"></script>

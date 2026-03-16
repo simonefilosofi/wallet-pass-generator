@@ -299,7 +299,7 @@ qrFileInput.addEventListener('change', () => {
 
 dropClear.addEventListener('click', (e) => {
   e.stopPropagation();
-  clearUpload();
+  startOver();
 });
 
 /* ── Keep state.barcodeData in sync if user edits the input ── */
@@ -960,9 +960,6 @@ async function loadDefaultLogo() {
   }
 }
 
-document.getElementById('startOverBtn').addEventListener('click', startOver);
-
-
 /* ══════════════════════════════════════════════════════════
    WEB PASS EXPORT
    ══════════════════════════════════════════════════════════ */
@@ -1188,8 +1185,6 @@ if (webPassBtn) webPassBtn.addEventListener('click', buildAndSaveWebPass);
    ONLINE SIGNING  (Cloudflare Worker proxy)
    ══════════════════════════════════════════════════════════ */
 
-const signingStatus     = document.getElementById('signingStatus');
-const signingStatusText = document.getElementById('signingStatusText');
 const signedBtn         = document.getElementById('signedBtn');
 const signedBtnIdle     = signedBtn.querySelector('.btn-idle');
 const signedBtnLoading  = signedBtn.querySelector('.btn-loading');
@@ -1241,20 +1236,14 @@ async function refreshUsageTracker() {
   }
 }
 
-/* Reflect worker availability in the status badge */
-function initSigningStatus() {
-  if (!WORKER_URL) {
-    signingStatus.classList.add('offline');
-    signingStatusText.textContent = 'Signing service not configured';
-  }
-
+function initSigningFeatures() {
   updateSignedBtnState();
   refreshUsageTracker();
 
   if (usageRefreshInterval) clearInterval(usageRefreshInterval);
   usageRefreshInterval = setInterval(refreshUsageTracker, 30000);
 }
-initSigningStatus();
+initSigningFeatures();
 
 /* Enable signed button when worker is configured AND barcode data exists */
 function updateSignedBtnState() {
@@ -1324,7 +1313,7 @@ async function buildAndDownloadSigned() {
     refreshUsageTracker();
   } catch (err) {
     console.error(err);
-    downloadNote.textContent = `Error: ${err.message}`;
+    downloadNote.textContent = 'Unable to add to Apple Wallet right now. Please try again in a moment.';
   } finally {
     signedBtnIdle.classList.remove('hidden');
     signedBtnLoading.classList.add('hidden');
