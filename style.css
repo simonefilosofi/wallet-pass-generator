@@ -1141,7 +1141,7 @@ input[readonly]:focus {
   height: 64px;
   object-fit: cover;
   border-radius: 50%;
-  clip-path: circle(50% at 50% 50%);
+  clip-path: circle(43% at 50% 50%);
 }
 
 .gdg-logo {
