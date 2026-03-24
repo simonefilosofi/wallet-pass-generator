@@ -115,6 +115,8 @@ header {
   object-fit: contain;
   border-radius: 10px;
   flex-shrink: 0;
+  transform: rotate(-25deg);
+  transform-origin: center;
 }
 
 h1 {
